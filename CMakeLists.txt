@@ -11,6 +11,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 find_package(OpenGL REQUIRED)
 find_package(GLFW3 REQUIRED)
+find_package(ASSIMP REQUIRED)
+if(ASSIMP_FOUND)
+    include_directories(${ASSIMP_INCLUDE_DIR})
+endif() 
 
 include_directories(includes)
 include_directories(includes/external)
@@ -51,6 +55,14 @@ target_link_libraries(model-load glfw3)
 else()
 target_link_libraries(model-load glfw)
 endif()
+target_link_libraries(model-load assimp)
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
 include_directories(${CMAKE_BINARY_DIR}/configuration)
+
+if(WIN32)
+add_custom_command(TARGET model-load POST_BUILD   
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/dlls/assimp-vc142-mtd.dll"
+        $<TARGET_FILE_DIR:model-load>)    
+endif()
