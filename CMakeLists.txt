@@ -19,6 +19,13 @@ add_executable(
 
     src/Main.cpp
     src/external/glad.c
+    includes/external/imgui/imgui.cpp
+    includes/external/imgui/imgui_draw.cpp
+    includes/external/imgui/imgui_demo.cpp
+    includes/external/imgui/imgui_widgets.cpp
+    includes/external/imgui/imgui_tables.cpp
+    includes/external/imgui/imgui_impl_glfw.cpp
+    includes/external/imgui/imgui_impl_opengl3.cpp
 )
 
 target_link_libraries(model-load ${CMAKE_DL_LIBS})
