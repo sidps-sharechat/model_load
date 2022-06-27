@@ -19,6 +19,7 @@ add_executable(
 
     src/Main.cpp
     src/external/glad.c
+    src/external/stb_image.cpp
     includes/external/imgui/imgui.cpp
     includes/external/imgui/imgui_draw.cpp
     includes/external/imgui/imgui_demo.cpp
