@@ -89,3 +89,26 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
+
+// // callback for mouse movement
+// void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+// {
+//     if (rCamera.isFirstMouse)
+//     {
+//         rCamera.isFirstMouse = false;
+//         rCamera.lastX = xpos;
+//         rCamera.lastY = ypos;
+//     }
+//     float xOffset = xpos - rCamera.lastX;
+//     float yOffset = rCamera.lastY - ypos; // y is reversed
+//     rCamera.lastX = xpos;
+//     rCamera.lastY = ypos;
+//     rCamera.xOff = xOffset;
+//     rCamera.yOff = yOffset;
+// }
+
+// // callback for the mouse scroll wheel
+// void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+// {
+//     rCamera.camera->process_scroll(yoffset);
+// }

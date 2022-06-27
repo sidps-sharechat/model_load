@@ -27,6 +27,11 @@ add_executable(
     src/external/glad.c
     src/external/stb_image.cpp
     src/FileSystem.cpp
+    src/Camera.cpp
+    src/Transform.cpp
+    src/Texture.cpp
+    src/Shader.cpp
+    src/Renderer.cpp
     includes/external/imgui/imgui.cpp
     includes/external/imgui/imgui_draw.cpp
     includes/external/imgui/imgui_demo.cpp
