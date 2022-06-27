@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION "3.16.3")
 
 project(model-load)
 
+set(CMAKE_CXX_STANDARD 17)
+if(MSVC)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+endif(MSVC)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 find_package(OpenGL REQUIRED)
@@ -9,6 +14,7 @@ find_package(GLFW3 REQUIRED)
 
 include_directories(includes)
 include_directories(includes/external)
+include_directories(configuration)
 
 if(WIN32)
 link_directories(lib)
@@ -20,6 +26,7 @@ add_executable(
     src/Main.cpp
     src/external/glad.c
     src/external/stb_image.cpp
+    src/FileSystem.cpp
     includes/external/imgui/imgui.cpp
     includes/external/imgui/imgui_draw.cpp
     includes/external/imgui/imgui_demo.cpp
@@ -39,3 +46,6 @@ target_link_libraries(model-load glfw3)
 else()
 target_link_libraries(model-load glfw)
 endif()
+
+configure_file(configuration/root_directory.h.in configuration/root_directory.h)
+include_directories(${CMAKE_BINARY_DIR}/configuration)
