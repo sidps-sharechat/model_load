@@ -1,3 +1,10 @@
+#include "Camera.h"
+#include "Shader.h"
+#include "Texture.h"
+#include "FileSystem.h"
+#include "Transform.h"
+#include "Renderer.h"
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
@@ -7,6 +14,53 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+
+Camera cam(glm::vec3(0.0f, 0.0f, 5.0f));
+VertexArray vArray;
+
+float vertices[] = {
+    // positions          // normals           // texture coords
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
 
 int main()
 {
@@ -32,8 +86,15 @@ int main()
     // glfwSetCursorPosCallback(window, mouse_callback);
     // glfwSetScrollCallback(window, scroll_callback);
 
-    // glEnable(GL_DEPTH_TEST);
-    // glDepthFunc(GL_LESS); // Closer objects will be drawn in front
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS); // Closer objects will be drawn in front
 
     // glEnable(GL_CULL_FACE); // Enable Face Culling
     // glCullFace(GL_BACK);    // To Cull Back Faces (do no draw)
@@ -49,34 +110,78 @@ int main()
     (void)io;
     ImGui::StyleColorsDark();
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to intialize GLAD" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    vArray.GenerateBuffers();
+    vArray.BindVAO();
+    vArray.BindVBO(36, 8 * sizeof(float), vertices);
+    vArray.SetAttribArray(0, 3, 8 * sizeof(float));
+    vArray.SetAttribArray(1, 3, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    vArray.SetAttribArray(2, 2, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    vArray.UnBindVBO();
+    vArray.UnBindVAO();
+
+    Shader shdr(FileSystem::get_path("shaders/shader_model.vs"), FileSystem::get_path("shaders/shader_model.fs"));
+
+    Texture tex;
+    tex.id = load_texture_from_path(FileSystem::get_path("resources/textures/brickwall.jpg"));
+    tex.path = "resources/textures/brickwall.jpg";
+    tex.type = TEXTURE_DIFFUSE;
 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        // New Frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Process Input
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        {
+            glfwSetWindowShouldClose(window, true);
+        }
 
+        glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        // glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Setup Data
+        glm::mat4 model = glm::mat4(1.0f);
+
+        glm::mat4 view = cam.get_view_matrix();
+
+        glm::mat4 projection(1.0f);
+        int currentWidth, currentHeight;
+        glfwGetWindowSize(window, &currentWidth, &currentHeight);
+        if (currentHeight == 0 || currentWidth == 0)
+        {
+            currentHeight = 1.0f;
+            currentWidth = 1.0f;
+        }
+        projection = glm::perspective((float)glm::radians(cam.fovZoom), (((float)currentWidth) / ((float)currentHeight)), 0.1f, 100.0f);
+
+        // Render Objects
+        shdr.use();
+        shdr.setFloat("material.texture_diffuse1", tex.id);
+        shdr.setMat4("model", model);
+        shdr.setMat4("view", view);
+        shdr.setMat4("projection", projection);
+        vArray.DrawTriangles(36, 0);
+
+        // Setup UI
         ImGui::Begin("UI Window");
         ImGui::End();
 
+        // Draw UI
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+        // End Frame
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    shdr.FreeData();
+    vArray.FreeData();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
