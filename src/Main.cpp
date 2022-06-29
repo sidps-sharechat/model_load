@@ -4,6 +4,7 @@
 #include "FileSystem.h"
 #include "Transform.h"
 #include "Renderer.h"
+#include "Model.h"
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -127,6 +128,9 @@ int main()
     tex.path = "resources/textures/brickwall.jpg";
     tex.type = TEXTURE_DIFFUSE;
 
+    Shutter::Model mod(FileSystem::get_path("resources/models/sphere/sphere.obj"));
+    // mod.PrintData();
+
     // Define Data
     ImVec4 bgColor(0.1f, 0.1f, 0.15f, 1.0f);
     Transform tr;
@@ -210,7 +214,9 @@ int main()
         shdr.setMat4("model", model);
         shdr.setMat4("view", view);
         shdr.setMat4("projection", projection);
-        vArray.DrawTriangles(36, 0);
+        // vArray.DrawTriangles(36, 0);
+
+        mod.Draw(shdr);
 
         // Setup UI
         ImGui::Begin("UI Window");

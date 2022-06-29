@@ -36,6 +36,7 @@ add_executable(
     src/Texture.cpp
     src/Shader.cpp
     src/Renderer.cpp
+    src/Model.cpp
     includes/external/imgui/imgui.cpp
     includes/external/imgui/imgui_draw.cpp
     includes/external/imgui/imgui_demo.cpp
