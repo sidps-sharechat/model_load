@@ -13,6 +13,7 @@
 
 #include <iostream>
 
+bool check_key(GLFWwindow *window, int key);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 Camera cam(glm::vec3(0.0f, 0.0f, 5.0f));
@@ -126,10 +127,21 @@ int main()
     tex.path = "resources/textures/brickwall.jpg";
     tex.type = TEXTURE_DIFFUSE;
 
+    // Define Data
+    ImVec4 bgColor(0.1f, 0.1f, 0.15f, 1.0f);
+    Transform tr;
+    bool freeRoam = false;
+    float cTime = 0.0f;
+    float pTime = 0.0f;
+    float deltaTime = 0.0f;
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        cTime = glfwGetTime();
+        deltaTime = cTime - pTime;
+        pTime = cTime;
         // New Frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -140,13 +152,45 @@ int main()
         {
             glfwSetWindowShouldClose(window, true);
         }
+        if (freeRoam)
+        {
+            if (check_key(window, GLFW_KEY_W))
+            {
+                cam.process_keyboard(FORWARD_DIR, deltaTime);
+            }
+            if (check_key(window, GLFW_KEY_S))
+            {
+                cam.process_keyboard(BACKWARD_DIR, deltaTime);
+            }
+            if (check_key(window, GLFW_KEY_A))
+            {
+                cam.process_keyboard(LEFT_DIR, deltaTime);
+            }
+            if (check_key(window, GLFW_KEY_D))
+            {
+                cam.process_keyboard(RIGHT_DIR, deltaTime);
+            }
+            if (check_key(window, GLFW_KEY_Q))
+            {
+                cam.process_keyboard(UP_DIR, deltaTime);
+            }
+            if (check_key(window, GLFW_KEY_E))
+            {
+                cam.process_keyboard(DOWN_DIR, deltaTime);
+            }
+        }
 
-        glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+        glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
         // glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Setup Data
         glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, tr.position);
+        model = glm::rotate(model, glm::radians(tr.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(tr.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, glm::radians(tr.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, tr.scale);
 
         glm::mat4 view = cam.get_view_matrix();
 
@@ -170,6 +214,15 @@ int main()
 
         // Setup UI
         ImGui::Begin("UI Window");
+        ImGui::ColorEdit3("Background", &bgColor.x);
+        ImGui::SliderFloat3("Position", &tr.position.x, -10.0f, 10.0f);
+        ImGui::SliderFloat3("Rotation", &tr.rotation.x, -180.0f, 180.0f);
+        ImGui::SliderFloat3("Scale", &tr.scale.x, -5.0f, 5.0f);
+        if (ImGui::Button("Reset"))
+        {
+            tr.reset_to_origin();
+        }
+        ImGui::Checkbox("Free Roam", &freeRoam);
         ImGui::End();
 
         // Draw UI
@@ -187,6 +240,11 @@ int main()
     ImGui::DestroyContext();
     glfwTerminate();
     return 0;
+}
+
+bool check_key(GLFWwindow *window, int key)
+{
+    return (glfwGetKey(window, key) == GLFW_PRESS);
 }
 
 // callback on  window size change
